@@ -1,25 +1,39 @@
 #
 # Makefile for a Video Disk Recorder plugin
 #
-# $Id$
 
 # The official name of this plugin.
 # This name will be used in the '-P...' option of VDR to load the plugin.
 # By default the main source file also carries this name.
-# IMPORTANT: the presence of this macro is important for the Make.config
-# file. So it must be defined, even if it is not used here!
-#
+
 PLUGIN = nordlichtsepg
 
 ### The version number of this plugin (taken from the main source file):
 
-VERSION = $(shell grep 'static const char \*VERSION *=' $(PLUGIN).c | awk '{ print $$6 }' | sed -e 's/[";]//g')
+VERSION = $(shell grep 'static const char \*const VERSION *=' $(PLUGIN).cpp | awk '{ print $$7 }' | sed -e 's/[";]//g')
+GIT_REV = $(shell git describe --always 2>/dev/null)
 
-### The C++ compiler and options:
+### The directory environment:
 
-CXX      ?= g++
-CXXFLAGS ?= -fPIC -g -O2 -Wall -Woverloaded-virtual -Wno-parentheses
+# Use package data if installed...otherwise assume we're under the VDR source directory:
+PKGCFG = $(if $(VDRDIR),$(shell pkg-config --variable=$(1) $(VDRDIR)/vdr.pc),$(shell PKG_CONFIG_PATH="$$PKG_CONFIG_PATH:../../.." pkg-config --variable=$(1) vdr))
+LIBDIR = $(call PKGCFG,libdir)
+LOCDIR = $(call PKGCFG,locdir)
+PLGCFG = $(call PKGCFG,plgcfg)
+#
+TMPDIR ?= /tmp
 
+### The compiler options:
+
+export CFLAGS	= $(call PKGCFG,cflags)
+export CXXFLAGS = $(call PKGCFG,cxxflags)
+
+ifeq ($(CFLAGS),)
+$(warning CFLAGS not set)
+endif
+ifeq ($(CXXFLAGS),)
+$(warning CXXFLAGS not set)
+endif
 ### The directory environment:
 
 VDRDIR = ../../..
@@ -30,9 +44,13 @@ TMPDIR = /tmp
 
 -include $(VDRDIR)/Make.config
 
-### The version number of VDR's plugin API (taken from VDR's "config.h"):
+### The version number of VDR's plugin API:
 
-APIVERSION = $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' $(VDRDIR)/config.h)
+APIVERSION = $(call PKGCFG,apiversion)
+
+### Allow user defined options to overwrite defaults:
+
+-include $(PLGCFG)
 
 ### The name of the distribution archive:
 
@@ -41,17 +59,65 @@ PACKAGE = vdr-$(ARCHIVE)
 
 ### Includes and Defines (add further entries here):
 
-INCLUDES += -I$(VDRDIR)/include
+INCLUDES += 
 
-DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -D_GNU_SOURCE $(CONFIG) \
+	$(if $(GIT_REV), -DGIT_REV='"$(GIT_REV)"')
+
+### Make it standard
+
+override CXXFLAGS += $(_CFLAGS) $(DEFINES) $(INCLUDES) \
+    -g -W -Wall -Wextra -Winit-self -Werror=overloaded-virtual -Wno-unused-parameter
+override CFLAGS	  += $(_CFLAGS) $(DEFINES) $(INCLUDES) \
+    -g -W -Wall -Wextra -Winit-self -Wdeclaration-after-statement -Wno-unused-parameter -std=c99
 
 ### The object files (add further files here):
 
 OBJS = $(PLUGIN).o mymenuevent.o mywhatsonitem.o
 
+SRCS = $(wildcard $(OBJS:.o=.c))
+
 ### The main target:
 
-all: libvdr-$(PLUGIN).so i18n
+all: $(SOFILE) i18n
+
+### Dependencies:
+
+MAKEDEP = $(CXX) -MM -MG
+DEPFILE = .dependencies
+$(DEPFILE): Makefile
+	@$(MAKEDEP) $(CXXFLAGS) $(SRCS) > $@
+
+-include $(DEPFILE)
+
+### Internationalization (I18N):
+
+PODIR	  = po
+I18Npo	  = $(wildcard $(PODIR)/*.po)
+I18Nmo	  = $(addsuffix .mo, $(foreach file, $(I18Npo), $(basename $(file))))
+I18Nmsgs  = $(addprefix $(DESTDIR)$(LOCDIR)/, $(addsuffix /LC_MESSAGES/vdr-$(PLUGIN).mo, $(notdir $(foreach file, $(I18Npo), $(basename $(file))))))
+I18Npot	  = $(PODIR)/$(PLUGIN).pot
+
+%.mo: %.po
+	msgfmt -c -o $@ $<
+
+$(I18Npot): $(SRCS)
+	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP \
+	-k_ -k_N --package-name=vdr-$(PLUGIN) --package-version=$(VERSION) \
+	--msgid-bugs-address='<see README>' -o $@ `ls $^`
+
+%.po: $(I18Npot)
+	msgmerge -U --no-wrap --no-location --backup=none -q -N $@ $<
+	@touch $@
+
+$(I18Nmsgs): $(DESTDIR)$(LOCDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
+	install -D -m644 $< $@
+
+.PHONY: i18n
+i18n: $(I18Nmo) $(I18Npot)
+
+install-i18n: $(I18Nmsgs)
+
 
 ### Implicit rules:
 
@@ -94,11 +160,17 @@ i18n: $(I18Nmsgs) $(I18Npot)
 
 ### Targets:
 
-libvdr-$(PLUGIN).so: $(OBJS)
-	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
-	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
+$(OBJS): Makefile
 
-dist: clean
+$(SOFILE): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) $(LIBS) -o $@
+
+install-lib: $(SOFILE)
+	install -D $^ $(DESTDIR)$(LIBDIR)/$^.$(APIVERSION)
+
+install: install-lib install-i18n
+
+dist: $(I18Npo) clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
 	@mkdir $(TMPDIR)/$(ARCHIVE)
 	@cp -a * $(TMPDIR)/$(ARCHIVE)
@@ -107,4 +179,6 @@ dist: clean
 	@echo Distribution package created as $(PACKAGE).tgz
 
 clean:
-	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot
+	@-rm -f $(PODIR)/*.mo $(PODIR)/*.pot
+	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~
+

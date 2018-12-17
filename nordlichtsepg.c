@@ -7,7 +7,7 @@
 
 #define CHNUMWIDTH (numdigits(Channels.MaxNumber()))
 
-static const char *VERSION        = "0.9";
+static const char *VERSION        = "0.10";
 static const char *DESCRIPTION    = tr("Extended EPG");
 static const char *MAINMENUENTRY  = tr("Nordlicht's EPG");
 
