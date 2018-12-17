@@ -81,15 +81,6 @@ SRCS = $(wildcard $(OBJS:.o=.c))
 
 all: $(SOFILE) i18n
 
-### Dependencies:
-
-MAKEDEP = $(CXX) -MM -MG
-DEPFILE = .dependencies
-$(DEPFILE): Makefile
-	@$(MAKEDEP) $(CXXFLAGS) $(SRCS) > $@
-
--include $(DEPFILE)
-
 ### Internationalization (I18N):
 
 PODIR	  = po
