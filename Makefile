@@ -81,6 +81,15 @@ SRCS = $(wildcard $(OBJS:.o=.c))
 
 all: $(SOFILE) i18n
 
+### Dependencies:
+
+MAKEDEP = $(CXX) -MM -MG
+DEPFILE = .dependencies
+$(DEPFILE): Makefile
+	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+
+-include $(DEPFILE)
+
 ### Internationalization (I18N):
 
 PODIR	  = po
@@ -108,46 +117,6 @@ $(I18Nmsgs): $(DESTDIR)$(LOCDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
 i18n: $(I18Nmo) $(I18Npot)
 
 install-i18n: $(I18Nmsgs)
-
-
-### Implicit rules:
-
-%.o: %.c
-	$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) $<
-
-### Dependencies:
-
-MAKEDEP = $(CXX) -MM -MG
-DEPFILE = .dependencies
-$(DEPFILE): Makefile
-	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
-
--include $(DEPFILE)
-
-### Internationalization (I18N):
-
-PODIR     = po
-LOCALEDIR = $(VDRDIR)/locale
-I18Npo    = $(wildcard $(PODIR)/*.po)
-I18Nmsgs  = $(addprefix $(LOCALEDIR)/, $(addsuffix /LC_MESSAGES/vdr-$(PLUGIN).mo, $(notdir $(foreach file, $(I18Npo), $(basename $(file))))))
-I18Npot   = $(PODIR)/$(PLUGIN).pot
-
-%.mo: %.po
-	msgfmt -c -o $@ $<
-
-$(I18Npot): $(wildcard *.c)
-	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='<see README>' -o $@ $^
-
-%.po: $(I18Npot)
-	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
-	@touch $@
-
-$(I18Nmsgs): $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
-	@mkdir -p $(dir $@)
-	cp $< $@
-
-.PHONY: i18n
-i18n: $(I18Nmsgs) $(I18Npot)
 
 ### Targets:
 
