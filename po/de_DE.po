@@ -1,0 +1,64 @@
+# VDR plugin language source file.
+# Copyright (C) 2008 Martin Prochnow <nordlicht@martins-kabuff.de>
+# This file is distributed under the same license as the Nordlicht's EPG-Plugin package.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Nordlicht's EPG-Plugin 0.9\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2008-05-18 12:55+0200\n"
+"PO-Revision-Date: 2008-03-30 19:58+0200\n"
+"Last-Translator: \n"
+"Language-Team: <nordlicht@martins-kabuff.de>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Button$Edit T."
+msgstr "T. editieren"
+
+msgid "Button$Delete T."
+msgstr "T. löschen"
+
+msgid "no info"
+msgstr "keine Info"
+
+msgid "Can't switch channel!"
+msgstr ""
+
+msgid "Extended EPG"
+msgstr "Erweitertes EPG"
+
+msgid "Nordlicht's EPG"
+msgstr "Nordlicht's EPG"
+
+msgid "Step width (min)"
+msgstr "Sprungweite (min)"
+
+msgid "Jump to"
+msgstr "Springe zu"
+
+msgid "Switch with Ok"
+msgstr "Mit Ok umschalten"
+
+msgid "Appearance"
+msgstr "Erscheinungsbild"
+
+msgid "Hide main menu entry"
+msgstr "Eintrag im Hauptmenü verstecken"
+
+msgid "Keep display after switching"
+msgstr "Anzeige nicht beenden nach Umschalten"
+
+msgid "Show channel numbers"
+msgstr "Kanalnummern anzeigen"
+
+msgid "Show channel groups"
+msgstr "Kanalgruppen anzeigen"
+
+msgid "Hide encrypted channels"
+msgstr "Verschlüsselte Kanäle ausblenden"
+
+msgid "Hide radio channels"
+msgstr "Radio-Kanäle ausblenden"
