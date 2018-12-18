@@ -8,9 +8,14 @@
 
 PLUGIN = nordlichtsepg
 
+### Configuration (edit this for your needs)
+
+#CONFIG := -DDEBUG			# enable debug output+functions
+
+
 ### The version number of this plugin (taken from the main source file):
 
-VERSION = $(shell grep 'static const char \*const VERSION *=' $(PLUGIN).cpp | awk '{ print $$7 }' | sed -e 's/[";]//g')
+VERSION = $(shell grep 'static const char \*const VERSION *=' $(PLUGIN).c | awk '{ print $$7 }' | sed -e 's/[";]//g')
 GIT_REV = $(shell git describe --always 2>/dev/null)
 
 ### The directory environment:
@@ -34,11 +39,6 @@ endif
 ifeq ($(CXXFLAGS),)
 $(warning CXXFLAGS not set)
 endif
-### The directory environment:
-
-VDRDIR = ../../..
-LIBDIR = ../../lib
-TMPDIR = /tmp
 
 ### Allow user defined options to overwrite defaults:
 
@@ -56,6 +56,10 @@ APIVERSION = $(call PKGCFG,apiversion)
 
 ARCHIVE = $(PLUGIN)-$(VERSION)
 PACKAGE = vdr-$(ARCHIVE)
+
+### The name of the shared object file:
+
+SOFILE = libvdr-$(PLUGIN).so
 
 ### Includes and Defines (add further entries here):
 
