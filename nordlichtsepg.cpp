@@ -5,9 +5,9 @@
 #include "nordlichtsepg.h"
 #include "mymenuevent.h"
 
-#define CHNUMWIDTH (numdigits(Channels.MaxNumber()))
+#define CHNUMWIDTH (numdigits(cChannels::MaxNumber()))
 
-static const char *VERSION        = "0.10";
+static const char *VERSION        = "0.9";
 static const char *DESCRIPTION    = tr("Extended EPG");
 static const char *MAINMENUENTRY  = tr("Nordlicht's EPG");
 
@@ -63,8 +63,6 @@ class myMenuWhatsOn:public cOsdMenu
   bool next,jumpto;
   char tmp[16];
   int currentChannel,hh,mm,index;
-  const cSchedules *schedules;
-  cSchedulesLock schedulesLock;
 
   void LoadSchedules(int shift);
   void GoToDay(int day);
@@ -117,14 +115,15 @@ void myMenuWhatsOn::LoadSchedules(int shift)
 
  Clear();
  
- schedules=cSchedules::Schedules(schedulesLock);
- for(cChannel *Channel=Channels.First();Channel;Channel=Channels.Next(Channel))
+ LOCK_SCHEDULES_READ;
+ LOCK_CHANNELS_READ;
+ for(const cChannel *Channel=Channels->First();Channel;Channel=Channels->Next(Channel))
  {
   if(!(!Channel->Vpid()&&Channel->Apid(0)&&hideradiochannels||Channel->Ca()&&hideencryptedchannels))
   {
    if(!Channel->GroupSep())
    {
-    const cSchedule *Schedule=schedules->GetSchedule(Channel->GetChannelID());
+    const cSchedule *Schedule=Schedules->GetSchedule(Channel->GetChannelID());
     // if there is no cSchedule we can't get infos
     if(Schedule)
     { 

@@ -12,9 +12,9 @@ class myWhatsOnItem:public cOsdItem
  public:
   const cEvent *event;
   const cChannel *channel;
-  cTimer *timer;
+  const cTimer *timer;
   virtual void Set();
-  myWhatsOnItem(const cEvent *Event,cChannel *Channel,bool Next);
+  myWhatsOnItem(const cEvent *Event,const cChannel *Channel,bool Next);
 };
 
 class Icons

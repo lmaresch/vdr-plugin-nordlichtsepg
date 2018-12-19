@@ -12,7 +12,7 @@ myMenuEvent::myMenuEvent(myWhatsOnItem *Item):cOsdMenu(trVDR("Event"))
 {
  item=Item;
  event=item->event;
- timer=item->timer;
+ timer=(cTimer*) item->timer;
  channel=item->channel;
 
  SetTitle(channel->Name());
@@ -55,9 +55,10 @@ eOSState myMenuEvent::Record()
   if(event)
   {
    timer=new cTimer(event);
-   Timers.Add(timer);
+   LOCK_TIMERS_WRITE;
+   Timers->Add(timer);
    timer->Matches();
-   Timers.SetModified();
+   Timers->SetModified();
   }
   else
   {
@@ -96,13 +97,15 @@ eOSState myMenuEvent::Delete()
    if(Interface->Confirm(trVDR("Timer still recording - really delete?")))
    {
     timer->Skip();
-    cRecordControls::Process(time(NULL));
+    LOCK_TIMERS_WRITE;
+    cRecordControls::Process(Timers, time(NULL));
    }
    else
     return osContinue;
   }
-  Timers.Del(timer);
-  Timers.SetModified();
+  LOCK_TIMERS_WRITE;
+  Timers->Del(timer);
+  Timers->SetModified();
   timer=NULL;
 
   SetHelp(trVDR("Button$Record"),NULL,NULL,trVDR("Button$Switch"));

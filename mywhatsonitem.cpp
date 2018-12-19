@@ -35,7 +35,7 @@ void Icons::InitCharSet()
 }
 
 // --- myWhatsOnItem ----------------------------------------------------------
-myWhatsOnItem::myWhatsOnItem(const cEvent *Event,cChannel *Channel,bool Next)
+myWhatsOnItem::myWhatsOnItem(const cEvent *Event,const cChannel *Channel,bool Next)
 {
   event = Event;
   channel = Channel;
@@ -52,7 +52,8 @@ void myWhatsOnItem::Set()
   const char *m = " ";
  
   // look for timers
-  for(cTimer *ti = Timers.First();ti;ti = Timers.Next(ti))
+  LOCK_TIMERS_READ;
+  for(const cTimer *ti = Timers->First();ti;ti = Timers->Next(ti))
   {
     if(ti->Matches(t) && (ti->Channel() == channel))
     {

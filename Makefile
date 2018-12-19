@@ -15,7 +15,7 @@ PLUGIN = nordlichtsepg
 
 ### The version number of this plugin (taken from the main source file):
 
-VERSION = $(shell grep 'static const char \*const VERSION *=' $(PLUGIN).c | awk '{ print $$7 }' | sed -e 's/[";]//g')
+VERSION = $(shell grep 'static const char \*const VERSION *=' $(PLUGIN).cpp | awk '{ print $$7 }' | sed -e 's/[";]//g')
 GIT_REV = $(shell git describe --always 2>/dev/null)
 
 ### The directory environment:
@@ -79,7 +79,7 @@ override CFLAGS	  += $(_CFLAGS) $(DEFINES) $(INCLUDES) \
 
 OBJS = $(PLUGIN).o mymenuevent.o mywhatsonitem.o
 
-SRCS = $(wildcard $(OBJS:.o=.c))
+SRCS = $(wildcard $(OBJS:.o=.cpp)) $(PLUGIN).cpp
 
 ### The main target:
 
@@ -87,7 +87,7 @@ all: $(SOFILE) i18n
 
 ### Dependencies:
 
-MAKEDEP = $(CXX) -MM -MG
+MAKEDEP = $(CC) -MM -MG
 DEPFILE = .dependencies
 $(DEPFILE): Makefile
 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
