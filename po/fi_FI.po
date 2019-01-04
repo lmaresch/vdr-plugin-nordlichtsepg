@@ -11,7 +11,7 @@ msgstr ""
 "PO-Revision-Date: 2008-03-30 19:58+0200\n"
 "Last-Translator: \n"
 "Language-Team: <nordlicht@martins-kabuff.de>\n"
-"Language: \n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -35,7 +35,7 @@ msgid "Nordlicht's EPG"
 msgstr "Nordlichtin ohjelmaopas"
 
 msgid "Step width (min)"
-msgstr "Aikasiirtymän pituus (min)"
+msgstr "Aikasiirtymï¿½n pituus (min)"
 
 msgid "Jump to"
 msgstr "Pikavalinta kellonaikaan"
@@ -47,16 +47,16 @@ msgid "Appearance"
 msgstr "Ulkoasu"
 
 msgid "Hide main menu entry"
-msgstr "Piilota valinta päävalikosta"
+msgstr "Piilota valinta pï¿½ï¿½valikosta"
 
 msgid "Keep display after switching"
-msgstr "Säilytä valikko kanavaa valittaessa"
+msgstr "Sï¿½ilytï¿½ valikko kanavaa valittaessa"
 
 msgid "Show channel numbers"
-msgstr "Näytä kanavien numerointi"
+msgstr "Nï¿½ytï¿½ kanavien numerointi"
 
 msgid "Show channel groups"
-msgstr "Näytä kanavaryhmät"
+msgstr "Nï¿½ytï¿½ kanavaryhmï¿½t"
 
 msgid "Hide encrypted channels"
 msgstr "Piilota salatut kanavat"

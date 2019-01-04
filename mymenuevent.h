@@ -5,7 +5,7 @@
 #include "nordlichtsepg.h"
 #include "mywhatsonitem.h"
 
-class myMenuEvent:public cOsdMenu
+class myMenuEvent : public cOsdMenu
 {
   private:
     eOSState Record(void);
@@ -15,6 +15,7 @@ class myMenuEvent:public cOsdMenu
     const cChannel *channel;
     cTimer *timer;
     myWhatsOnItem *item;
+
   public:
     myMenuEvent(myWhatsOnItem *Item);
     virtual void Display(void);

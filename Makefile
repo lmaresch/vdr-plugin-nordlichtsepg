@@ -90,7 +90,7 @@ all: $(SOFILE) i18n
 MAKEDEP = $(CC) -MM -MG
 DEPFILE = .dependencies
 $(DEPFILE): Makefile
-	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.cpp) > $@
 
 -include $(DEPFILE)
 

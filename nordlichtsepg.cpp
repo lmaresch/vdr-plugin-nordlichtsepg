@@ -8,7 +8,7 @@
 #define CHNUMWIDTH (numdigits(cChannels::MaxNumber()))
 #define TMP_LENGTH 16
 
-static const char *VERSION = "0.9";
+static const char *VERSION = "0.10";
 static const char *DESCRIPTION = tr("Extended EPG");
 static const char *MAINMENUENTRY = tr("Nordlicht's EPG");
 
@@ -125,8 +125,8 @@ void myMenuWhatsOn::LoadSchedules(int shift)
 
     Clear();
 
-    LOCK_SCHEDULES_READ;
     LOCK_CHANNELS_READ;
+    LOCK_SCHEDULES_READ;
     for (const cChannel *Channel = Channels->First(); Channel; Channel = Channels->Next(Channel))
     {
         if (!((!Channel->Vpid() && Channel->Apid(0) && hideradiochannels) || (Channel->Ca() && hideencryptedchannels)))
