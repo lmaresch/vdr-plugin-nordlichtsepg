@@ -8,7 +8,7 @@
 #define CHNUMWIDTH (numdigits(cChannels::MaxNumber()))
 #define TMP_LENGTH 16
 
-static const char *VERSION = "0.10";
+static const char *VERSION = "0.11";
 static const char *DESCRIPTION = tr("Extended EPG");
 static const char *MAINMENUENTRY = tr("Nordlicht's EPG");
 
